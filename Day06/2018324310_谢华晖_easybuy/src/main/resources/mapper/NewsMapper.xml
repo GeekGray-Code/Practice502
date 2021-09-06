@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zl.easybuy.mapper.NewsMapper">
+    <select id="count" parameterType="NewsBO" resultType="long">
+        select count(1)  from  easybuy_news
+        <where>
+             <include refid="where_sql"/>
+        </where>
+    </select>
+
+    <select id="queryByPage" parameterType="NewsBO" resultType="News">
+      select *  from  easybuy_news
+      <where>
+        <include refid="where_sql"/>
+    </where>
+    order by createtime DESC
+    <if test="newsBO!=null">
+        <if test="newsBO.isPage">
+            limit #{newsBO.startIndex} , #{newsBO.pageSize}
+        </if>
+    </if>
+   </select>
+
+    <!--sql片段: 在其他Statement中引用: sql复用-->
+    <sql id="where_sql">
+        <if test="newsBO!=null">
+          <if test="newsBO.news != null">
+              <if test="newsBO.news.id != null">
+                and id = #{newsBO.news.id}
+              </if>
+              <if test="newsBO.news.title != null and newsBO.news.title!='' ">
+                  and title like '%${newsBO.news.title}%'
+              </if>
+          </if>
+        </if>
+    </sql>
+</mapper>
